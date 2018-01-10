@@ -2,7 +2,7 @@
 
 Tiered Commission Rates for Easy Digital Downloads Commissions allows you to easily setup a tiered reward system where your vendors are rewarded with higher and higher commission rates, the more they sell or earn. This is similar to popular marketplaces such as ThemeForest, Fiverr, and alike.
 
-Once installed, you will have a new Tiered Commissions Rates section in your Easy Digital Downloads Settings. On this screen, you will be able to create as many tiers as you wish.
+Once installed, you will have a new Tiered Commissions Rates section in your Easy Digital Downloads Extension Settings. On this screen, you will be able to create as many tiers as you wish.
 
 Tiers consist of four options:
 
