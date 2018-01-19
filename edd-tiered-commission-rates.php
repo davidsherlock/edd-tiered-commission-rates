@@ -8,16 +8,15 @@
  * Author URI:      https://sellcomet.com
  * Text Domain:     edd-tiered-commission-rates
  *
- * @package         EDD\TieredCommissionRates
+ * @package         EDD\Tiered_Commission_Rates
  * @author          Sell Comet
- * @copyright       Copyright (c) 2017, Sell Comet
+ * @copyright       Copyright (c) Sell Comet
  */
 
-
 // Exit if accessed directly
-if( !defined( 'ABSPATH' ) ) exit;
+if( ! defined( 'ABSPATH' ) ) exit;
 
-if( !class_exists( 'EDD_Tiered_Commission_Rates' ) ) {
+if( ! class_exists( 'EDD_Tiered_Commission_Rates' ) ) {
 
     /**
      * Main EDD_Tiered_Commission_Rates class
@@ -47,7 +46,6 @@ if( !class_exists( 'EDD_Tiered_Commission_Rates' ) ) {
                 self::$instance->setup_constants();
                 self::$instance->includes();
                 self::$instance->load_textdomain();
-                self::$instance->hooks();
 
                 self::$edd_commissions = new EDD_Tiered_Commission_Rates_Commissions();
             }
@@ -92,31 +90,11 @@ if( !class_exists( 'EDD_Tiered_Commission_Rates' ) ) {
 
             // Admin only requires
             if ( is_admin() ) {
-
-              // Include admin settings
-              require_once EDD_TIERED_COMMISSION_RATES_DIR . 'includes/admin/settings.php';
-
+                require_once EDD_TIERED_COMMISSION_RATES_DIR . 'includes/admin/settings.php';
             }
 
-            // Include the commissions plugin integrations
-            require_once EDD_TIERED_COMMISSION_RATES_DIR . 'includes/integrations/plugin-commissions.php';
-
-        }
-
-
-        /**
-         * Run action and filter hooks
-         *
-         * @access      private
-         * @since       1.0.0
-         * @return      void
-         */
-        private function hooks() {
-
-            // Handle licensing
-            if( class_exists( 'EDD_License' ) && is_admin() ) {
-                $license = new EDD_License( __FILE__, 'Tiered Commission Rates', EDD_TIERED_COMMISSION_RATES_VER, 'Sell Comet', null, 'https://sellcomet.com/', 222 );
-            }
+            // The main plugin class
+            require_once EDD_TIERED_COMMISSION_RATES_DIR . 'includes/classes/class-commissions.php';
         }
 
 
@@ -164,13 +142,23 @@ if( !class_exists( 'EDD_Tiered_Commission_Rates' ) ) {
  * @return      \EDD_Tiered_Commission_Rates The one true EDD_Tiered_Commission_Rates
  */
 function EDD_Tiered_Commission_Rates_load() {
-    if( ! class_exists( 'Easy_Digital_Downloads' ) ) {
-        if( ! class_exists( 'EDD_Extension_Activation' ) ) {
-            require_once 'includes/classes/class.extension-activation.php';
+    if ( ! class_exists( 'Easy_Digital_Downloads' ) || ! class_exists( 'EDDC' ) ) {
+        if ( ! class_exists( 'EDD_Extension_Activation' ) || ! class_exists( 'EDD_Commissions_Activation' ) ) {
+          require_once 'includes/class-activation.php';
         }
 
-        $activation = new EDD_Extension_Activation( plugin_dir_path( __FILE__ ), basename( __FILE__ ) );
-        $activation = $activation->run();
+        // Easy Digital Downloads activation
+		if ( ! class_exists( 'Easy_Digital_Downloads' ) ) {
+			$edd_activation = new EDD_Extension_Activation( plugin_dir_path( __FILE__ ), basename( __FILE__ ) );
+			$edd_activation = $edd_activation->run();
+		}
+
+        // Commissions activation
+		if ( ! class_exists( 'EDDC' ) ) {
+			$edd_commissions_activation = new EDD_Commissions_Activation( plugin_dir_path( __FILE__ ), basename( __FILE__ ) );
+			$edd_commissions_activation = $edd_commissions_activation->run();
+		}
+
     } else {
         return EDD_Tiered_Commission_Rates::instance();
     }

@@ -1,20 +1,20 @@
-=== Commission Fees ===
-Contributors: Sell Comet
+=== Easy Digital Downloads - Tiered Commission Rates ===
+Contributors: sellcomet, mandyjonesmusic
 Donate link: https://sellcomet.com/downloads/tiered-commission-rates/
-Tags: Add-On, Commission Rates, Commissions, Easy Digital Downloads, EDD, Extension, Marketplace, Plugin, Tiered Rates, Vendors, WordPress
+Tags: Commissions, Easy Digital Downloads, EDD, Extension, Marketplace, Plugin, Tiered, Vendors, Rates
 Requires at least: 4.0
-Tested up to: 4.8
+Tested up to: 4.9.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Reward your vendors with higher commission rates the more they sell or earn
+Reward your vendors with higher commission rates the more they sell or earn.
 
 == Description ==
 
 Tiered Commission Rates for Easy Digital Downloads Commissions allows you to easily setup a tiered reward system where your vendors are rewarded with higher and higher commission rates, the more they sell or earn. This is similar to popular marketplaces such as ThemeForest, Fiverr, and alike.
 
-Once installed, you will have a new Tiered Commissions Rates section in your Easy Digital Downloads Settings. On this screen, you will be able to create as many tiers as you wish.
+Once installed, you will have a new Tiered Commissions Rates section in your Easy Digital Downloads Commissions Settings. On this screen, you will be able to create as many tiers as you wish.
 
 Tiers consist of four options:
 
@@ -34,7 +34,7 @@ You can enable the Tiered Rate Expiration option to reset tiered commission rate
 
 By default, tiered rate calculations include paid and unpaid commission statuses. By checking this option, only “paid” commissions will be included.
 
-**Use-case Examples**
+== Use-case Examples ==
 
 Let’s look at some real-world examples of how Tiered Commission Rates could potentially be set up, based on sales volume:
 
@@ -52,7 +52,7 @@ Or even one like this (based on total commission earnings):
 
 It’s been proven over and over again that providing your vendors incentives like higher commission rates dramatically increases the vendors likelihood to actively promote, upload, and create more products and/or services.
 
-**Features**
+== Features ==
 
 * Number of sales and total earnings tier types
 * Mix and match tier types, allowing for a flexible reward structure
@@ -60,16 +60,16 @@ It’s been proven over and over again that providing your vendors incentives li
 * Disable tiered rates globally, per-user, and/or per-download
 * Easily disable specific tiers when not required
 * Seamless integration with Easy Digital Downloads and Commissions admin panels
-* Translation-ready and contains a British English (UK) POT file to get you started!
+* Translation-ready and contains a POT file to get you started translating into your native language
 * Easily extendable. Have a specific use-case? Tiered Commission Rates includes plenty of developer-ready filters and action hooks to make it possible!
 * Developed using the best practices, with security, extensibility, and readability in mind
 
-**Important Notes**
+== Important Notes ==
 
 * Calculations are performed on the commission counts and total amounts, not the cart item prices. This option is, however, road-mapped for a future release.
 * Flat rate commission amounts are ignored, since it wouldn’t make sense to override these in instances where specific agreements are in place with vendors. Only percentage based tiers (and rates) are possible at this time.
 
-> Notice: This extension requires Easy Digital Downloads (free) and Commissions (minimum version of 3.4 to function) (paid). Refunds will not be granted to customers who do not meet this criteria.
+This plugin requires [Easy Digital Downloads](http://wordpress.org/extend/plugins/easy-digital-downloads/ "Easy Digital Downloads") and [Commissions](https://easydigitaldownloads.com/downloads/commissions/ "Commissions") version 3.4.6 to function.
 
 == Installation ==
 
@@ -77,15 +77,21 @@ This section describes how to install the plugin and get it working.
 
 e.g.
 
-1. Upload the plugin files to the `/wp-content/plugins/edd-tiered-commission-rates` directory, or install the plugin through the WordPress plugins screen directly.
-1. Activate the plugin through the 'Plugins' screen in WordPress
-1. Use the Settings->Plugin Name screen to configure the plugin
-1. (Make your instructions match the desired user flow for activating and installing your plugin. Include any steps that might be needed for explanatory purposes)
+1. Unpack the entire contents of this plugin zip file into your `wp-content/plugins/` folder locally
+1. Upload to your site
+1. Navigate to `wp-admin/plugins.php` on your site (your WP Admin plugin page)
+1. Activate this plugin
+1. That's it! You can configure the tiers under the Commission Settings.
+
+OR you can just install it with WordPress by going to Plugins >> Add New >> and type this plugin's name
+
+== Frequently Asked Questions ==
+
+== Screenshots ==
+
+== Upgrade Notice ==
 
 == Changelog ==
 
-Version 1.0.0, November 22, 2017
-
-Initial Release
-
-== Upgrade Notice ==
+= 1.0.0, January 19, 2018 =
+* Initial Release

@@ -2,15 +2,16 @@
 /**
  * Integration functions to make Tiered Commission Rates compatible with EDD Commissions
  *
- * @package     EDD\TieredCommissionRates
- * @subpackage  Functions
- * @copyright   Copyright (c) 2017, Sell Comet
+ * @package     EDD\Tiered_Commission_Rates
+ * @subpackage  Classes
+ * @copyright   Copyright (c) Sell Comet
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
 
-// Exit if accessed directly
-if( !defined( 'ABSPATH' ) ) exit;
+ // Exit if accessed directly
+ if( ! defined( 'ABSPATH' ) ) exit;
+
 
 /**
  * Integration functions to make Tiered Commission Rates compatible with EDD Commissions
@@ -36,30 +37,34 @@ class EDD_Tiered_Commission_Rates_Commissions {
 		}
 
 		// Make sure we are at the minimum version of EDD Commissions - which is 3.3.
-		add_action( 'admin_notices', array( $this, 'too_old_notice' ) );
+		add_action( 'admin_notices', array( $this, 'version_check_notice' ) );
 
 		// Render our "Check to disable tiered commission rates" checkbox on the commissions meta box
-		add_action( 'eddc_metabox_after_enable', array( $this, 'edd_tiered_commission_rates_download_meta_render' ), 10, 1 );
+		add_action( 'eddc_metabox_after_enable', array( $this, 'add_meta_box_fields' ), 10, 1 );
 
 		// Save our "Check to disable tiered commission rates" checkbox to post meta
-		add_action( 'save_post', array( $this, 'edd_tiered_commission_rates_download_meta_box_save' ), 10, 1 );
+		add_action( 'save_post', array( $this, 'save_meta_box_fields' ), 10, 1 );
 
 		// Filters/Removes the "disabled" rates from the tiered commission rates
 		add_filter( 'edd_tiered_commission_rates_filtered_rates', array( $this, 'remove_disabled_rates' ) );
 
-		// Filters the commission rate - the main function for adjusting the commission rate
+		// Filters the commission rate - the main function for adjusting the commission rate basd on the commission tiers
 		add_filter( 'eddc_get_recipient_rate', array( $this, 'get_recipient_rate' ), 10, 3 );
 
 		// If "Exclude Unpaid Statuses" is checked, only return "paid" commission statuses
 		if ( edd_tiered_commission_rates_exclude_unpaid() ) {
 
-			add_filter( 'get_commissions_totals_args', array( $this, 'get_commissions_totals_args_filter' ), 10, 1 );
+			// Earnings (Totals)
 
-			add_filter( 'get_monthly_commissions_totals_args', array( $this, 'get_monthly_commissions_totals_args_filter' ), 10, 1 );
+			add_filter( 'edd_tiered_commission_rates_get_commissions_totals', array( $this, 'filter_query_args' ), 10, 1 );
 
-			add_filter( 'get_commissions_count_args', array( $this, 'get_commissions_count_args_filter' ), 10, 1 );
+			add_filter( 'edd_tiered_commission_rates_get_monthly_commissions_totals', array( $this, 'filter_query_args' ), 10, 1 );
 
-			add_filter( 'get_monthly_commissions_count_args', array( $this, 'get_monthly_commissions_count_args_filter' ), 10, 1 );
+			// Sales (Counts)
+
+			add_filter( 'edd_tiered_commission_rates_get_commissions_count', array( $this, 'filter_query_args' ), 10, 1 );
+
+			add_filter( 'edd_tiered_commission_rates_get_monthly_commissions_count', array( $this, 'filter_query_args' ), 10, 1 );
 
 		}
 
@@ -73,12 +78,11 @@ class EDD_Tiered_Commission_Rates_Commissions {
 	 * @access      public
 	 * @return      void
 	 */
-	public function too_old_notice(){
-
-		if ( defined( 'EDD_COMMISSIONS_VERSION' ) && version_compare( EDD_COMMISSIONS_VERSION, '3.4' ) == -1 ){
+	public function version_check_notice() {
+		if ( defined( 'EDD_COMMISSIONS_VERSION' ) && version_compare( EDD_COMMISSIONS_VERSION, '3.4.6' ) == -1 ){
 			?>
 			<div class="notice notice-error">
-				<p><?php echo __( 'EDD Commission Fees: Your version of EDD Commissions must be updated to version 3.4 or later to use the Commission Fees extension in conjunction with Commissions.', 'edd-commission-fees' ); ?></p>
+				<p><?php echo __( 'EDD Tiered Commission Rates: Your version of EDD Commissions must be updated to version 3.4.6 or later to use the Tiered Commission Rates extension in conjunction with Commissions.', 'edd-tiered-commission-rates' ); ?></p>
 			</div>
 			<?php
 		}
@@ -132,14 +136,14 @@ class EDD_Tiered_Commission_Rates_Commissions {
 
 
 	/**
-	 * Filter the  user commissions totals to only include "paid" statuses
+	 * Filter the include query args to include only "paid" statuses
 	 *
-	 * @since 1.0.0
-	 * @access public
+	 * @since       1.0.0
+	 * @access      public
 	 * @param       array $args The unfiltered query args
 	 * @return      array $args The filtered query args
 	 */
-	public function get_commissions_totals_args_filter( $args ) {
+	public function filter_query_args( $args ) {
 		$args['status'] = array( 'paid' );
 
 		return $args;
@@ -149,30 +153,15 @@ class EDD_Tiered_Commission_Rates_Commissions {
 	/**
 	 * Get the total paid and unpaid commissions
 	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @param       int $user_id The ID of the user to look up
+	 * @since       1.0.0
+	 * @access      public
+	 * @param       integer $user_id The ID of the user to look up
 	 * @return      string The total of unpaid commissions
 	 */
 	public function get_commissions_totals( $user_id = 0 ) {
-		$total = edd_commissions()->commissions_db->sum( 'amount', apply_filters( 'get_commissions_totals_args', array( 'status' => array( 'paid', 'unpaid' ), 'user_id' => $user_id, 'number' => -1 ) ) );
+		$total = edd_commissions()->commissions_db->sum( 'amount', apply_filters( 'edd_tiered_commission_rates_get_commissions_totals', array( 'status' => array( 'paid', 'unpaid' ), 'user_id' => ! empty( $user_id ) ? $user_id : false, 'number' => -1 ) ) );
 
 		return edd_sanitize_amount( $total );
-	}
-
-
-	/**
-	 * Filter the monthly user commissions totals to only include "paid" statuses
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @param       array $args The unfiltered query args
-	 * @return      array $args The filtered query args
-	 */
-	public function get_monthly_commissions_totals_args_filter( $args ) {
-		$args['status'] = array( 'paid' );
-
-		return $args;
 	}
 
 
@@ -186,12 +175,14 @@ class EDD_Tiered_Commission_Rates_Commissions {
 	 * @return int	 Number of paid and unpaid sales for the time period (based on now).
 	 */
 	public function get_monthly_commissions_totals( $date = '', $user_id = 0 ) {
-		$commissions_args = apply_filters( 'get_monthly_commissions_totals_args', array(
-			'user_id' => absint( $user_id ),
-			'status'  => array( 'paid', 'unpaid' ),
+		$args = apply_filters( 'edd_tiered_commission_rates_get_monthly_commissions_totals', array(
+            'status'	=> array( 'paid', 'unpaid' ),
+            'user_id'	=> ! empty( $user_id ) ? $user_id : false,
+            'number'    => - 1,
 		) );
 
 		if ( ! empty( $date ) ) {
+
 			switch ( $date ) {
 				case 'month' :
 					$date = array(
@@ -200,84 +191,53 @@ class EDD_Tiered_Commission_Rates_Commissions {
 					);
 					break;
 			}
-			$commissions_args['date'] = $date;
+
+			$args['date'] = $date;
 		}
 
-		$commissions_args = apply_filters( 'get_monthly_commissions_totals', $commissions_args, $date, $user_id );
-
-		$total = edd_commissions()->commissions_db->sum( 'amount', $commissions_args );
+		$total = edd_commissions()->commissions_db->sum( 'amount', $args );
 		return edd_sanitize_amount( $total );
-	}
-
-
-	/**
-	 * Filter the user commissions count to only include "paid" statuses
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @param       array $args The unfiltered query args
-	 * @return      array $args The filtered query args
-	 */
-	public function get_commissions_count_args_filter( $args ) {
-		$args['status'] = array( 'paid' );
-
-		return $args;
 	}
 
 
 	/**
 	 * Get a count of user commissions
 	 *
-	 * @since 1.0.0
-	 * @access public
+	 * @since 		1.0.0
+	 * @access 		public
 	 * @param       int $user_id The ID of the user to look up
-	 * @param       array $status The statuses to look up
 	 * @return      int The number of commissions for the user
 	 */
-	public function get_commissions_count( $user_id = false, $status = array( 'paid', 'unpaid' ) ) {
-		$args = apply_filters( 'get_commissions_count_args', array(
-			'status'  => $status,
-			'user_id' => ! empty( $user_id ) ? $user_id : false,
-			'number'  => - 1,
+	public function get_commissions_count( $user_id = false ) {
+		$args = apply_filters( 'edd_tiered_commission_rates_get_commissions_count', array(
+			'status'     => array( 'paid', 'unpaid' ),
+			'user_id'    => ! empty( $user_id ) ? $user_id : false,
+			'number'     => - 1,
 		) );
 
 		$count = edd_commissions()->commissions_db->count( $args );
-
 		return edd_sanitize_amount( $count );
-	}
-
-
-	/**
-	 * Filter the user monthly commissions count to only include "paid" statuses
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @param       array $args The unfiltered query args
-	 * @return      array $args The filtered query args
-	 */
-	public function get_monthly_commissions_count_args_filter( $args ) {
-		$args['status'] = array( 'paid' );
-
-		return $args;
 	}
 
 
 	/**
 	 * Retrieves the paid and unpaid commissions count for the given commissions recipient.
 	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @param string $date         Date period to retrieve the referral count for.
-	 * @param int    $user_id 		 Commission recipient user ID.
-	 * @return int	 Number of paid and unpaid sales for the time period (based on now).
+	 * @since        1.0.0
+	 * @access       public
+	 * @param        string $date Date period to retrieve the referral count for.
+	 * @param        int    $user_id Commission recipient user ID.
+	 * @return       integer Number of paid and unpaid sales for the time period (based on now).
 	 */
 	public function get_monthly_commissions_count( $date = '', $user_id = 0 ) {
-		$commissions_args = apply_filters( 'get_monthly_commissions_count_args', array(
-			'user_id' => absint( $user_id ),
-			'status'  => array( 'paid', 'unpaid' ),
+		$args = apply_filters( 'edd_tiered_commission_rates_get_monthly_commissions_count', array(
+            'status'	=> array( 'paid', 'unpaid' ),
+			'user_id' 	=> ! empty( $user_id ) ? $user_id : false,
+            'number'    => - 1,
 		) );
 
 		if ( ! empty( $date ) ) {
+
 			switch ( $date ) {
 				case 'month' :
 					$date = array(
@@ -286,13 +246,12 @@ class EDD_Tiered_Commission_Rates_Commissions {
 					);
 					break;
 			}
-			$commissions_args['date'] = $date;
+
+			$args['date'] = $date;
 		}
 
-		$commissions_args = apply_filters( 'get_monthly_commissions_count', $commissions_args, $date, $user_id );
-
-		$total = edd_commissions()->commissions_db->count( $commissions_args );
-		return edd_sanitize_amount( $total );
+		$count = edd_commissions()->commissions_db->count( $args );
+		return edd_sanitize_amount( $count );
 	}
 
 
@@ -303,8 +262,7 @@ class EDD_Tiered_Commission_Rates_Commissions {
 	 * @access      public
 	 * @return      void
 	 */
-	public function edd_tiered_commission_rates_download_meta_render( $post_id ) {
-
+	public function add_meta_box_fields( $post_id ) {
 		$enabled = get_post_meta( $post_id, '_edd_tiered_commision_rates_disabled', true ) ? true : false;
 
 		?>
@@ -312,7 +270,7 @@ class EDD_Tiered_Commission_Rates_Commissions {
 		<tr id="edd_tiered_commission_rates_disabled_wrapper">
 			<td class="edd_field_type_text" colspan="2">
 				<input type="checkbox" name="edd_tiered_commission_rates_disabled" id="edd_tiered_commission_rates_disabled" value="1" <?php checked( true, $enabled, true ); ?>/>&nbsp;
-				<label for="edd_tiered_commission_rates_disabled"><?php _e( 'Check to disable tiered commission rates', 'eddc' ); ?></label>
+				<label for="edd_tiered_commission_rates_disabled"><?php _e( 'Check to disable tiered commission rates', 'edd-tiered-commission-rates' ); ?></label>
 			</td>
 		</tr>
 		<?php
@@ -323,12 +281,12 @@ class EDD_Tiered_Commission_Rates_Commissions {
 	 * Save form data when save_post is called
 	 *
 	 * @since       1.0.0
-	 * @access 			public
-	 * @param       int $post_id The ID of the post being saved
+	 * @access 		public
+	 * @param       integer $post_id The ID of the post being saved
 	 * @global      object $post The WordPress post object for this download
 	 * @return      void
 	 */
-	public function edd_tiered_commission_rates_download_meta_box_save( $post_id ) {
+	public function save_meta_box_fields( $post_id ) {
 		global $post;
 
 		// verify nonce
@@ -341,10 +299,12 @@ class EDD_Tiered_Commission_Rates_Commissions {
 			return $post_id;
 		}
 
+		// Check post type is download
 		if ( isset( $_POST['post_type'] ) && 'download' != $_POST['post_type'] ) {
 			return $post_id;
 		}
 
+		// Verify the current user can edit products
 		if ( ! current_user_can( 'edit_product', $post_id ) ) {
 			return $post_id;
 		}
@@ -367,26 +327,26 @@ class EDD_Tiered_Commission_Rates_Commissions {
 	 * Note: Flat rate amounts are skipped over and left untouched.
 	 *
 	 * @since       1.0.0
+     * @access 		public
 	 * @param       float $rate the commission recipient rate
-	 * @param       int $download_id the download id
-	 * @param       int $user_id the user id
+	 * @param       integer $download_id the download id
+	 * @param       integer $user_id the user id
 	 * @return      float the updated recipient rate
 	 */
 	public function get_recipient_rate( $rate, $download_id, $user_id ) {
 
 		// Are tiered rates disabled on the download or user profile?
-		if ( edd_tiered_commission_rates_user_tiers_disabled( $user_id ) || edd_tiered_commission_rates_download_tiers_disabled ( $download_id ) || edd_tiered_commission_rates_disabled() ) {
+		if ( edd_tiered_commission_rates_user_tiers_disabled( $user_id ) || edd_tiered_commission_rates_download_tiers_disabled ( $download_id ) ) {
 			return $rate;
 		}
 
-		$base_rate 			= $rate;
-
+		$base_rate 		= $rate;
 		$rates          = $this->get_rates();
 		$tiers_expire 	= edd_tiered_commission_rates_expiration_enabled();
-		$type 					= eddc_get_commission_type( $download_id );
+        $tier_applied   = false;
 
 		// Is the download using flat amounts? If override flat amounts isn't enabled, return default rate
-		if ( 'flat' == $type ) {
+		if ( 'flat' == eddc_get_commission_type( $download_id ) ) {
 			return $rate;
 		}
 
@@ -399,43 +359,44 @@ class EDD_Tiered_Commission_Rates_Commissions {
 				$earnings	= $this->get_monthly_commissions_totals( 'month', $user_id );
 				$sales		= $this->get_monthly_commissions_count( 'month', $user_id );
 			} else {
-				$earnings = $this->get_commissions_totals( $user_id );
+				$earnings 	= $this->get_commissions_totals( $user_id );
 				$sales 		= $this->get_commissions_count( $user_id );
 			}
 
 			// Loop through the rates to see which applies to this commission recipient
 			foreach( $rates as $tiered_rate ) {
 
-				if( empty( $tiered_rate['threshold'] ) || empty( $tiered_rate['rate'] ) ) {
+				if ( empty( $tiered_rate['threshold'] ) || empty( $tiered_rate['rate'] ) ) {
 					continue;
 				}
 
-				if( 'earnings' == $tiered_rate['type'] ) {
+				if ( 'earnings' == $tiered_rate['type'] ) {
 
-					if( $earnings >= edd_sanitize_amount( $tiered_rate['threshold'] ) ) {
+					if ( $earnings >= edd_sanitize_amount( $tiered_rate['threshold'] ) ) {
 						$rate = $tiered_rate['rate'];
 						break;
-
 					}
 
 				} else {
 
-					if( $sales >= $tiered_rate['threshold'] ) {
-
+					if ( $sales >= $tiered_rate['threshold'] ) {
 						$rate = $tiered_rate['rate'];
 						break;
-
 					}
 
 				}
 
 			}
 
-			do_action( 'edd_tiered_commission_rates_get_recipient_rate', $base_rate, $rate, $download_id, $user_id );
+            // Tiered applied?
+            if ( $base_rate != $rate ) {
+                $tier_applied = true;
+            }
+
+			do_action( 'edd_tiered_commission_rates_get_recipient_rate', $tier_applied, $base_rate, $rate, $download_id, $user_id );
 		}
 
 		return $rate;
 	}
-
 
 }

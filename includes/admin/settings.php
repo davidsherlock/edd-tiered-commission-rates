@@ -2,44 +2,27 @@
 /**
  * Extension settings
  *
- * @package     EDD\TiredCommissionRates
+ * @package     EDD\Tired_Commission_Rates
  * @subpackage  Admin/Settings
- * @copyright   Copyright (c) 2017, Sell Comet
+ * @copyright   Copyright (c) Sell Comet
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
 
+ // Exit if accessed directly
+ if( ! defined( 'ABSPATH' ) ) exit;
 
-// Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
-
+ 
 /**
- * Registers the subsection for EDD Settings
+ * Registers the new Tiered Commission Rates options in Commissions Settings
  *
- * @since       1.0.0
- * @param       array $sections The sections
- * @return      array Sections with tiered commission rates added
- */
-function edd_tiered_commission_rates_settings_section_extensions( $sections ) {
-	$sections['tiered_commission_rates'] = __( 'Tiered Commission Rates', 'edd-tiered-commission-rates' );
-	return $sections;
-}
-add_filter( 'edd_settings_sections_extensions', 'edd_tiered_commission_rates_settings_section_extensions' );
-
-
-/**
- * Registers the new Commission Fees options in Extensions
- *
+ * @access		public
  * @since       1.0.0
  * @param       $settings array the existing plugin settings
  * @return      array The new EDD settings array with commissions added
  */
-function edd_tiered_commission_rates_settings_extensions( $settings ) {
-
-	$tiered_commission_rates_settings = apply_filters( 'edd_tiered_commission_rates_fields_settings', array(
+function edd_tiered_commission_rates_settings( $settings ) {
+	$tiered_commission_rates_settings = array(
 		array(
 			'id'      => 'edd_tiered_commission_rates_header',
 			'name'    => '<strong>' . __( 'Tiered Rates', 'edd-tiered-commission-rates' ) . '</strong>',
@@ -48,52 +31,43 @@ function edd_tiered_commission_rates_settings_extensions( $settings ) {
 			'size'    => 'regular',
 		),
 		array(
-			'id'      => 'edd_tiered_commission_rates_disabled',
-			'name'    => __( 'Disable Tiered Rates', 'edd-tiered-commission-rates' ),
-			'desc'    => __( 'Check this box to disable tiered commission rates.', 'edd-tiered-commission-rates' ),
-			'type'    => 'checkbox',
-		),
-		array(
 			'id'      => 'edd_tiered_commission_rates',
-			'name'    => __( 'Tiered Commission Rates', 'edd-tiered-commission-rates' ),
+			'name'    => __( 'Rates', 'edd-tiered-commission-rates' ),
 			'desc' 		=> __( 'Add tiered rates for specific sales and earnings thresholds. Add rates lowest to highest. Enter rates as percentages, such as 6.5 for 6.5%.', 'edd-tiered-commission-rates' ),
 			'type'    => 'tiered_rates',
 		),
 		array(
 			'id'      => 'edd_tiered_commission_rates_expiration',
-			'name'    => __( 'Tiered Rate Expiration', 'edd-tiered-commission-rates' ),
+			'name'    => __( 'Rate Expiration', 'edd-tiered-commission-rates' ),
 			'desc'    => __( 'Check this box to reset tiered commission rates on the 1st of every month.', 'edd-tiered-commission-rates' ),
 			'type'    => 'checkbox',
 		),
 		array(
 			'id'      => 'edd_tiered_commission_rates_exclude_unpaid',
 			'name'    => __( 'Exclude Unpaid Statuses', 'edd-tiered-commission-rates' ),
-			'desc'    => __( 'By default, tiered rate conditions include paid and unpaid commission statuses. By checking this box, unpaid commission will be excluded.', 'edd-tiered-commission-rates' ),
+			'desc'    => __( 'By default, tiered rate conditions include paid and unpaid commission statuses. By checking this box, unpaid commissions will be excluded.', 'edd-tiered-commission-rates' ),
 			'type'    => 'checkbox',
 		),
-	) );
-
-	$tiered_commission_rates_settings = apply_filters( 'edd_tiered_commission_rates_settings', $tiered_commission_rates_settings );
-
-	if ( version_compare( EDD_VERSION, 2.5, '>=' ) ) {
-		$tiered_commission_rates_settings = array( 'tiered_commission_rates' => $tiered_commission_rates_settings );
-	}
+	);
 
 	return array_merge( $settings, $tiered_commission_rates_settings );
 }
-add_filter( 'edd_settings_extensions', 'edd_tiered_commission_rates_settings_extensions' );
+add_filter( 'eddc_settings', 'edd_tiered_commission_rates_settings' );
 
 
-
-
+/**
+ * Registers the new Commission Fees options in Extensions
+ *
+ * @access		public
+ * @since       1.0.0
+ * @param       array $args callback args
+ * @return      void
+ */
 function edd_tiered_rates_callback( $args ) {
-
 	$rates = edd_tiered_commission_rates_get_rates();
-	$count = count( $rates );
-
 	$class = edd_sanitize_html_class( $args['field_class'] );
 
-?>
+	?>
 	<script type="text/javascript">
 	jQuery(document).ready(function($) {
 
@@ -141,13 +115,14 @@ function edd_tiered_rates_callback( $args ) {
 	}
 	</style>
 	<p><?php echo $args['desc']; ?></p>
-	<table id="edd-tiered-commission-rates" class="form-table wp-list-table widefat fixed posts <?php echo $class; ?>">
+	<input type="hidden" name="edd_tiered_commission_rates_nonce" value="<?php echo wp_create_nonce( basename( __FILE__ ) ); ?>" />
+	<table id="edd-tiered-commission-rates" class="form-table wp-list-table widefat fixed posts <?php echo esc_attr( $class ); ?>">
 		<thead>
 			<tr>
-				<th scope="col" class="edd_tiered_commission_fees_type"><?php _e( 'Type', 'edd-tiered-commission-rates' ); ?><span alt="f223" class="edd-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Tiered commission type: </strong>Select either number of sales or total commission earnings as the tier condition. Number of sales counts the commission records for that specific vendor, whereas total earnings counts the total value of the commissions. Both paid and unpaid commission records are included by default, however unpaid commission records can be excluded below if required.' ); ?>"></span></th>
-				<th scope="col" class="edd_tiered_commission_fees_threshold"><?php _e( 'Threshold', 'edd-tiered-commission-rates' ); ?><span alt="f223" class="edd-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Tiered commission thresholds: </strong>Enter the number of sales or total commission earnings a vendor must reach to get the tiered rate. Currency symbols are not required. Enter thresholds as whole amounts, such as 10 for $10.00.' ); ?>"></span></th>
-				<th scope="col" class="edd_tiered_commission_fees_rate"><?php _e( 'Rate', 'edd-tiered-commission-rates' ); ?><span alt="f223" class="edd-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Tiered commission rates: </strong>Enter the percentage rate for each tier from lowest to highest. Percent symbols are not required. Enter rates as percentages, such as 6.5 for 6.5%.' ); ?>"></span></th>
-				<th scope="col" class="edd_tiered_commission_fees_disabled"><?php _e( 'Disabled', 'edd-tiered-commission-rates' ); ?></th>
+				<th scope="col" class="edd_tax_country"><?php _e( 'Type', 'edd-tiered-commission-rates' ); ?><span alt="f223" class="edd-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Tiered commission type: </strong>Select either number of sales or total commission earnings as the tier condition. Number of sales counts the commission records for that specific vendor, whereas total earnings counts the total (sum) value of the commissions. Both paid and unpaid commission records are included by default, however unpaid commission records can be excluded below if required.' ); ?>"></span></th>
+				<th scope="col" class="edd_tax_state"><?php _e( 'Threshold', 'edd-tiered-commission-rates' ); ?><span alt="f223" class="edd-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Tiered commission thresholds: </strong>Enter the number of sales or total commission earnings a vendor must reach to achieve the tiered rate. Currency symbols are not required.' ); ?>"></span></th>
+				<th scope="col" class="edd_tax_rate"><?php _e( 'Rate', 'edd-tiered-commission-rates' ); ?><span alt="f223" class="edd-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Tiered commission rates: </strong>Enter the percentage rate for each tier from lowest to highest. Percent symbols are not required. Enter rates as percentages, such as 6.5 for 6.5%.' ); ?>"></span></th>
+				<th scope="col" class="edd_tax_global"><?php _e( 'Disabled', 'edd-tiered-commission-rates' ); ?></th>
 				<th scope="col"><?php _e( 'Remove', 'edd-tiered-commission-rates' ); ?></th>
 			</tr>
 		</thead>
@@ -165,19 +140,19 @@ function edd_tiered_rates_callback( $args ) {
 					?>
 					<tr>
 						<td>
-							<select name="edd_tiered_commission_rates[rates][<?php echo $key; ?>][type]">
-								<option value="sales"<?php selected( 'sales', $type ); ?>><?php _e( 'Number of Sales', 'edd-tiered-commission-rates' ); ?></option>
-								<option value="earnings"<?php selected( 'earnings', $type ); ?>><?php _e( 'Total Earnings', 'edd-tiered-commission-rates' ); ?></option>
+							<select name="edd_tiered_commission_rates[rates][<?php echo esc_attr( $key ); ?>][type]">
+								<option value="sales"<?php selected( 'sales', esc_attr( $type ) ); ?>><?php _e( 'Number of Sales', 'edd-tiered-commission-rates' ); ?></option>
+								<option value="earnings"<?php selected( 'earnings', esc_attr( $type ) ); ?>><?php _e( 'Total Earnings', 'edd-tiered-commission-rates' ); ?></option>
 							</select>
 						</td>
 						<td>
-							<input name="edd_tiered_commission_rates[rates][<?php echo $key; ?>][threshold]" type="text" value="<?php echo esc_attr( $rate['threshold'] ); ?>"/>
+							<input name="edd_tiered_commission_rates[rates][<?php echo esc_attr( $key ); ?>][threshold]" type="text" value="<?php echo esc_attr( $rate['threshold'] ); ?>"/>
 						</td>
 						<td>
-							<input name="edd_tiered_commission_rates[rates][<?php echo $key; ?>][rate]" type="text" value="<?php echo esc_attr( $rate['rate'] ); ?>"/>
+							<input name="edd_tiered_commission_rates[rates][<?php echo esc_attr( $key ); ?>][rate]" type="text" value="<?php echo esc_attr( $rate['rate'] ); ?>"/>
 						</td>
 						<td>
-							<input name="edd_tiered_commission_rates[rates][<?php echo $key; ?>][disabled]" id="edd_tiered_commission_rates[disabled]" type="checkbox" value="on" <?php checked( $disabled, true ); ?> aria-label="<?php echo esc_attr( $aria_label ); ?>"/>
+							<input name="edd_tiered_commission_rates[rates][<?php echo esc_attr( $key ); ?>][disabled]" id="edd_tiered_commission_rates[disabled]" type="checkbox" value="on" <?php checked( esc_attr( $disabled ), true ); ?> aria-label="<?php echo esc_attr( $aria_label ); ?>"/>
 						</td>
 						<td><span class="edd_tiered_commission_rates_remove_rate button-secondary" name="edd_tiered_commission_rates_remove_rate"><?php _e( 'Remove Rate', 'edd-tiered-commission-rates' ); ?></span></td>
 					</tr>
@@ -186,16 +161,19 @@ function edd_tiered_rates_callback( $args ) {
 			<?php if( empty( $rates ) ) : ?>
 				<tr>
 					<td>
-						<select name="edd_tiered_commission_rates[rates][<?php echo $count; ?>][type]">
+						<select name="edd_tiered_commission_rates[rates][0][type]">
 							<option value="sales"><?php _e( 'Number of Sales', 'edd-tiered-commission-rates' ); ?></option>
 							<option value="earnings"><?php _e( 'Total Earnings', 'edd-tiered-commission-rates' ); ?></option>
 						</select>
 					</td>
 					<td>
-						<input name="edd_tiered_commission_rates[rates][<?php echo $count; ?>][threshold]" type="text" value=""/>
+						<input name="edd_tiered_commission_rates[rates][0][threshold]" type="text" value=""/>
 					</td>
 					<td>
-						<input name="edd_tiered_commission_rates[rates][<?php echo $count; ?>][rate]" type="text" value=""/>
+						<input name="edd_tiered_commission_rates[rates][0][rate]" type="text" value=""/>
+					</td>
+					<td>
+						<input name="edd_tiered_commission_rates[rates][0][disabled]" type="checkbox" value=""/>
 					</td>
 					<td><span class="edd_tiered_commission_rates_remove_rate button-secondary" name="edd_tiered_commission_rates_remove_rate"><?php _e( 'Remove Rate', 'edd-tiered-commission-rates' ); ?></span></td>
 				</tr>
@@ -210,26 +188,37 @@ function edd_tiered_rates_callback( $args ) {
 
 
 /**
- * Taxes Settings Sanitization
+ * Tiered Commission Rates sanitization and save
  *
- * Adds a settings error (for the updated message)
- * This also saves the tax rates table
- *
- * @since 1.6
- * @param array $input The value inputted in the field
- * @return string $input Sanitized value
+ * @access		public
+ * @since 		1.0.0
+ * @param 		array $input The value inputted in the field
+ * @return 		string $input Sanitized value
  */
 function edd_settings_sanitize_tiered_commission_rates( $input ) {
 
+	// Verify nonce
+	if ( ! isset( $_POST['edd_tiered_commission_rates_nonce'] ) || ! wp_verify_nonce( $_POST['edd_tiered_commission_rates_nonce'], basename( __FILE__ ) ) ) {
+		return $input;
+	}
+
+	// Verify user can manage shop settings
 	if( ! current_user_can( 'manage_shop_settings' ) ) {
 		return $input;
 	}
 
+	// Verify fields are set
 	if( ! isset( $_POST['edd_tiered_commission_rates'] ) ) {
 		return $input;
 	}
 
-	$new_rates = ! empty( $_POST['edd_tiered_commission_rates'] ) ? array_values( $_POST['edd_tiered_commission_rates'] ) : array();
+	// Sanitize form fields
+	if ( ! empty( $_POST['edd_tiered_commission_rates'] ) && is_array( $_POST['edd_tiered_commission_rates'] ) ) {
+		$new_rates = array_values( $_POST['edd_tiered_commission_rates'] );
+		array_walk_recursive( $new_rates, 'sanitize_text_field', wp_unslash( $_POST['edd_tiered_commission_rates'] ) );
+	} else {
+		$new_rates = false;
+	}
 
 	$new_rates = $new_rates[0];
 
@@ -249,8 +238,7 @@ function edd_settings_sanitize_tiered_commission_rates( $input ) {
 
 		foreach( $new_rates as $key => $rate ) {
 
-			// Allow for 0 values.
-			$rate_value = edd_tiered_commission_rates_abs_number_round( $rate['rate'] );
+			$rate_value = edd_tiered_commission_rates_sanitize_rate( $rate['rate'] );
 
 			if ( empty( $rate['threshold'] ) || null === $rate_value ) {
 
@@ -258,8 +246,31 @@ function edd_settings_sanitize_tiered_commission_rates( $input ) {
 
 			} else {
 
-				$new_rates[ $key ]['threshold'] = absint( $rate['threshold'] );
-				$new_rates[ $key ]['rate']      = (float) $rate_value;
+				// Remove currency and percentage symbols
+				$rate['threshold'] = str_replace( '%', '', $rate['threshold'] );
+				$rate['threshold'] = str_replace( '$', '', $rate['threshold'] );
+
+				switch ( $new_rates[ $key ]['type'] ) {
+					case 'earnings':
+						$rate['threshold'] = $rate['threshold'] < 0 || ! is_numeric( $rate['threshold'] ) ? '' : $rate['threshold'];
+						$rate['threshold'] = round( $rate['threshold'], edd_currency_decimal_filter() );
+						break;
+					case 'sales':
+					default:
+						if ( $rate['threshold'] < 0 || ! is_numeric( $rate['threshold'] ) ) {
+							$rate['threshold'] = '';
+						}
+
+						$rate['threshold'] = ( is_numeric( $rate['threshold'] ) && $rate['threshold'] < 1 ) ? round( $rate['threshold'], 0 ) : $rate['threshold'];
+						if ( is_numeric( $rate['threshold'] ) ) {
+							$rate['threshold'] = round( $rate['threshold'], 0 );
+						}
+
+						break;
+				}
+
+				$new_rates[ $key ]['threshold'] = $rate['threshold'];
+				$new_rates[ $key ]['rate']      = $rate_value;
 
 				// If unchecked, the rate is "enabled".
 				if ( ! isset( $rate['disabled'] ) ) {
