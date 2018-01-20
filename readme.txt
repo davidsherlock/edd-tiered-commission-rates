@@ -61,6 +61,7 @@ It’s been proven over and over again that providing your vendors incentives li
 * Number of sales and total earnings tier types
 * Mix and match tier types, allowing for a flexible reward structure
 * Thresholds can be either based on download earnings (and sales) or commissions
+* Adds a note to the payment record when a tier condition is met
 * Calculate based on either paid and unpaid commission statuses, or paid only
 * Disable tiered rates globally, per-user, and/or per-download
 * Easily disable specific tiers when not required
@@ -69,11 +70,29 @@ It’s been proven over and over again that providing your vendors incentives li
 * Have a specific use-case? Tiered Commission Rates includes plenty of developer-ready filters and action hooks to make it possible!
 * Developed using the best practices, with security, extensibility, and readability in mind
 
+This plugin requires [Easy Digital Downloads](http://wordpress.org/extend/plugins/easy-digital-downloads/ "Easy Digital Downloads") and [Commissions](https://easydigitaldownloads.com/downloads/commissions/ "Commissions") version 3.4.6 to function.
+
 == Important Note ==
 
 * Flat rate commission amounts are ignored, since it wouldn’t make sense to override these in instances where specific agreements are in place with vendors. Only percentage based tiers (and rates) are possible at this time.
 
-This plugin requires [Easy Digital Downloads](http://wordpress.org/extend/plugins/easy-digital-downloads/ "Easy Digital Downloads") and [Commissions](https://easydigitaldownloads.com/downloads/commissions/ "Commissions") version 3.4.6 to function.
+== Bugs ==
+
+If you find an issue, let us know [here](https://github.com/davidsherlock/edd-tiered-commission-rates/issues?state=open)!
+
+== Support ==
+
+Please visit the [support page](https://wordpress.org/support/plugin/edd-tiered-commission-rates) if you need to submit a support request.
+
+== Contributions ==
+
+Anyone is welcome to contribute to Commission Thresholds.
+
+There are various ways you can contribute:
+
+* Raise an [Issue](https://github.com/davidsherlock/edd-tiered-commission-rates/issues) on GitHub
+* Send us a Pull Request with your bug fixes and/or new features. Please open an issue beforehand if one does not currently exist.
+* Provide feedback and suggestions on [enhancements](https://github.com/davidsherlock/edd-tiered-commission-rates/issues?direction=desc&labels=Enhancement&page=1&sort=created&state=open)
 
 == Installation ==
 
