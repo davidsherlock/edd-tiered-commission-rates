@@ -22,6 +22,10 @@ You can enable the Tiered Rate Expiration option to reset tiered commission rate
 
 By default, tiered rate calculations include paid and unpaid commission statuses. By checking this option, only “paid” commissions will be included.
 
+**Use Download Stats**
+
+Thresholds can be either based on download earnings and sales or commissions. This setting ignores the rate expiration setting.
+
 ## Use-case Examples
 
 Let’s look at some real-world examples of how Tiered Commission Rates could potentially be set up, based on sales volume:
@@ -44,6 +48,7 @@ It’s been proven over and over again that providing your vendors incentives li
 
 * Number of sales and total earnings tier types
 * Mix and match tier types, allowing for a flexible reward structure
+* Thresholds can be either based on download earnings and sales or commissions
 * Calculate based on either paid and unpaid commission statuses, or paid only
 * Disable tiered rates globally, per-user, and/or per-download
 * Easily disable specific tiers when not required
@@ -52,11 +57,10 @@ It’s been proven over and over again that providing your vendors incentives li
 * Have a specific use-case? Tiered Commission Rates includes plenty of developer-ready filters and action hooks to make it possible!
 * Developed using the best practices, with security, extensibility, and readability in mind
 
-This plugin requires [Easy Digital Downloads](http://wordpress.org/extend/plugins/easy-digital-downloads/) and [Commissions](https://easydigitaldownloads.com/downloads/commissions/).
+This plugin requires [Easy Digital Downloads](http://wordpress.org/extend/plugins/easy-digital-downloads/) and [Commissions](https://easydigitaldownloads.com/downloads/commissions/) version 3.4.6 to function.
 
-## Important Notes
+## Important Note
 
-* Calculations are performed on the commission counts and total amounts, not the cart item prices. This option is, however, road-mapped for a future release.
 * Flat rate commission amounts are ignored, since it wouldn’t make sense to override these in instances where specific agreements are in place with vendors. Only percentage based tiers (and rates) are possible at this time.
 
 ## Installation
