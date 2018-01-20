@@ -24,7 +24,7 @@ By default, tiered rate calculations include paid and unpaid commission statuses
 
 **Use Download Stats**
 
-Thresholds can be either based on download earnings and sales or commissions. This setting ignores the rate expiration setting.
+Thresholds can be either based on download earnings (and sales) or commissions. This setting ignores the rate expiration setting.
 
 ## Use-case Examples
 
@@ -48,7 +48,7 @@ It’s been proven over and over again that providing your vendors incentives li
 
 * Number of sales and total earnings tier types
 * Mix and match tier types, allowing for a flexible reward structure
-* Thresholds can be either based on download earnings and sales or commissions
+* Thresholds can be either based on download earnings (and sales) or commissions
 * Calculate based on either paid and unpaid commission statuses, or paid only
 * Disable tiered rates globally, per-user, and/or per-download
 * Easily disable specific tiers when not required
