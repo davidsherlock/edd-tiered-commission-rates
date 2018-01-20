@@ -48,7 +48,11 @@ It’s been proven over and over again that providing your vendors incentives li
 
 * Number of sales and total earnings tier types
 * Mix and match tier types, allowing for a flexible reward structure
+<<<<<<< HEAD
 * Thresholds can be either based on download earnings (and sales) or commissions
+=======
+* Thresholds can be either calculated based on download earnings (and sales) or commissions
+>>>>>>> bac0840d268bad8fa5f1b2fa04cf1a998f55d1bd
 * Adds a note to the payment record when a tier condition is met
 * Calculate based on either paid and unpaid commission statuses, or paid only
 * Disable tiered rates globally, per-user, and/or per-download
