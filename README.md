@@ -14,7 +14,7 @@ Tiers consist of four options:
 
 **Disabled:** Select to disable the tier
 
-**Tiered Rate Expiration**
+**Rate Expiration**
 
 You can enable the Tiered Rate Expiration option to reset tiered commission rates on the 1st of every month.
 
