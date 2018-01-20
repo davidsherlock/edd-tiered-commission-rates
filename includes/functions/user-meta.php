@@ -22,7 +22,7 @@
  * @return 		void
  */
 function edd_tiered_commission_rates_add_user_profile_fields( $user ) {
-	?>
+    ?>
 	<?php if ( current_user_can( 'manage_shop_settings' ) ) : ?>
 	<tr>
 		<th><label><?php _e('Disable Tiered Rates', 'edd-tiered-commission-rates'); ?></label></th>

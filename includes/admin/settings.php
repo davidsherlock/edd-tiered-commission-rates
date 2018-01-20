@@ -12,7 +12,7 @@
  // Exit if accessed directly
  if( ! defined( 'ABSPATH' ) ) exit;
 
- 
+
 /**
  * Registers the new Tiered Commission Rates options in Commissions Settings
  *
@@ -48,6 +48,12 @@ function edd_tiered_commission_rates_settings( $settings ) {
 			'desc'    => __( 'By default, tiered rate conditions include paid and unpaid commission statuses. By checking this box, unpaid commissions will be excluded.', 'edd-tiered-commission-rates' ),
 			'type'    => 'checkbox',
 		),
+        array(
+            'id'      => 'edd_tiered_commission_rates_use_download_stats',
+            'name'    => __( 'Use Download Stats', 'edd-tiered-commission-rates' ),
+            'desc'    => __( 'Check this box to use the download earnings and sales for calculations instead of commissions. This setting ignores the rate expiration setting.', 'edd-tiered-commission-rates' ),
+            'type'    => 'checkbox',
+        ),
 	);
 
 	return array_merge( $settings, $tiered_commission_rates_settings );

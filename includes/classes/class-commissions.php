@@ -20,6 +20,8 @@
  */
 class EDD_Tiered_Commission_Rates_Commissions {
 
+    public $payment_note;
+
 	/**
 	 * Get things started
 	 *
@@ -50,6 +52,8 @@ class EDD_Tiered_Commission_Rates_Commissions {
 
 		// Filters the commission rate - the main function for adjusting the commission rate basd on the commission tiers
 		add_filter( 'eddc_get_recipient_rate', array( $this, 'get_recipient_rate' ), 10, 3 );
+
+        add_filter( 'eddc_calc_commission_amount_args', array( $this, 'maybe_add_payment_note' ), 10, 1 );
 
 		// If "Exclude Unpaid Statuses" is checked, only return "paid" commission statuses
 		if ( edd_tiered_commission_rates_exclude_unpaid() ) {
@@ -355,13 +359,22 @@ class EDD_Tiered_Commission_Rates_Commissions {
 			// Start with highest tiers
 			$rates = array_reverse( $rates );
 
-			if ( $tiers_expire ) {
-				$earnings	= $this->get_monthly_commissions_totals( 'month', $user_id );
-				$sales		= $this->get_monthly_commissions_count( 'month', $user_id );
-			} else {
-				$earnings 	= $this->get_commissions_totals( $user_id );
-				$sales 		= $this->get_commissions_count( $user_id );
-			}
+            if ( edd_tiered_commission_rates_use_download_stats() ) {
+
+                $earnings   = edd_tiered_commission_rates_get_user_earnings( $user_id );
+                $sales      = edd_tiered_commission_rates_get_user_sales( $user_id );
+
+            } else {
+
+                if ( $tiers_expire ) {
+                    $earnings	= $this->get_monthly_commissions_totals( 'month', $user_id );
+                    $sales		= $this->get_monthly_commissions_count( 'month', $user_id );
+                } else {
+                    $earnings 	= $this->get_commissions_totals( $user_id );
+                    $sales 		= $this->get_commissions_count( $user_id );
+                }
+
+            }
 
 			// Loop through the rates to see which applies to this commission recipient
 			foreach( $rates as $tiered_rate ) {
@@ -388,15 +401,69 @@ class EDD_Tiered_Commission_Rates_Commissions {
 
 			}
 
-            // Tiered applied?
+            // Tiered rate applied?
             if ( $base_rate != $rate ) {
                 $tier_applied = true;
             }
 
-			do_action( 'edd_tiered_commission_rates_get_recipient_rate', $tier_applied, $base_rate, $rate, $download_id, $user_id );
+            $this->payment_note = apply_filters( 'edd_tiered_commission_rates_payment_note_args', array(
+                'applied'           => $tier_applied,
+                'base_rate'         => $base_rate,
+                'rate'              => $rate,
+                'download_id'       => $download_id,
+                'user_id'           => $user_id,
+                'tier_type'         => isset( $tiered_rate['type'] ) ? $tiered_rate['type'] : 'sales',
+                'tier_threshold'    => $tiered_rate['threshold']
+            ) );
+
 		}
 
 		return $rate;
 	}
+
+
+    /**
+     * Add a payment note if the threshold has not been reached
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       array $args
+     * @return      void
+     */
+    public function maybe_add_payment_note( $args ) {
+
+        if ( true === $this->payment_note['applied'] ) {
+
+            // If we were passed a numeric value as the payment id (which it should be)
+            if ( ! is_object( $args['payment_id'] ) && is_numeric( $args['payment_id'] ) ) {
+                $payment = new EDD_Payment( $args['payment_id'] );
+            } elseif( is_a( $args['payment_id'], 'EDD_Payment' ) ) {
+                $payment = $args['payment_id'];
+            } else {
+                return false;
+            }
+
+            $download = new EDD_Download( $args['download_id'] );
+
+            // Setup our variables for string replacement
+            $download_name = $download->get_name();
+            $base_rate = eddc_format_rate( $this->payment_note['base_rate'], $args['type'] );
+            $rate = eddc_format_rate( $this->payment_note['rate'], $args['type'] );
+            $display_name = get_userdata( $args['recipient'] )->display_name;
+            $threshold = edd_tiered_commission_rates_format_threshold( $this->payment_note['tier_threshold'], $this->payment_note['tier_type'] );
+
+            // Make tier 'type' translatable
+            if ( 'sales' == $this->payment_note['tier_type'] ) {
+                $type = __( 'sales', 'edd-tiered-commission-rates' );
+            } else {
+                $type = __( 'earnings', 'edd-tiered-commission-rates' );
+            }
+
+            // Add payment note
+            $payment->add_note( sprintf( __( 'Commission rate for %s adjusted from %s to %s because %s met the %s %s tier condition.', 'edd-tiered-commission-rates' ), $download_name, $base_rate, $rate, $display_name, $threshold, $type ) );
+        }
+
+        return $args;
+    }
 
 }
