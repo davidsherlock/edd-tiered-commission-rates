@@ -1,0 +1,218 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Easy Digital Downloads - Tiered Commission Rates\n"
+"POT-Creation-Date: 2018-01-20 12:27+0000\n"
+"PO-Revision-Date: 2018-01-20 12:27+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.5\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: edd-tiered-commission-rates.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: includes/admin/settings.php:28
+msgid "Tiered Rates"
+msgstr ""
+
+#: includes/admin/settings.php:35
+msgid "Rates"
+msgstr ""
+
+#: includes/admin/settings.php:36
+msgid ""
+"Add tiered rates for specific sales and earnings thresholds. Add rates "
+"lowest to highest. Enter rates as percentages, such as 6.5 for 6.5%."
+msgstr ""
+
+#: includes/admin/settings.php:41
+msgid "Rate Expiration"
+msgstr ""
+
+#: includes/admin/settings.php:42
+msgid ""
+"Check this box to reset tiered commission rates on the 1st of every month."
+msgstr ""
+
+#: includes/admin/settings.php:47
+msgid "Exclude Unpaid Statuses"
+msgstr ""
+
+#: includes/admin/settings.php:48
+msgid ""
+"By default, tiered rate conditions include paid and unpaid commission "
+"statuses. By checking this box, unpaid commissions will be excluded."
+msgstr ""
+
+#: includes/admin/settings.php:53
+msgid "Use Download Stats"
+msgstr ""
+
+#: includes/admin/settings.php:54
+msgid ""
+"Check this box to use the download earnings and sales for calculations "
+"instead of commissions. This setting ignores the rate expiration setting."
+msgstr ""
+
+#: includes/admin/settings.php:128
+msgid "Type"
+msgstr ""
+
+#: includes/admin/settings.php:128
+msgid ""
+"<strong>Tiered commission type: </strong>Select either number of sales or "
+"total commission earnings as the tier condition. Number of sales counts the "
+"commission records for that specific vendor, whereas total earnings counts "
+"the total (sum) value of the commissions. Both paid and unpaid commission "
+"records are included by default, however unpaid commission records can be "
+"excluded below if required."
+msgstr ""
+
+#: includes/admin/settings.php:129
+msgid "Threshold"
+msgstr ""
+
+#: includes/admin/settings.php:129
+msgid ""
+"<strong>Tiered commission thresholds: </strong>Enter the number of sales or "
+"total commission earnings a vendor must reach to achieve the tiered rate. "
+"Currency symbols are not required."
+msgstr ""
+
+#: includes/admin/settings.php:130
+msgid "Rate"
+msgstr ""
+
+#: includes/admin/settings.php:130
+msgid ""
+"<strong>Tiered commission rates: </strong>Enter the percentage rate for each "
+"tier from lowest to highest. Percent symbols are not required. Enter rates "
+"as percentages, such as 6.5 for 6.5%."
+msgstr ""
+
+#: includes/admin/settings.php:131
+msgid "Disabled"
+msgstr ""
+
+#: includes/admin/settings.php:132
+msgid "Remove"
+msgstr ""
+
+#: includes/admin/settings.php:142
+msgid "This rate tier is disabled"
+msgstr ""
+
+#: includes/admin/settings.php:144
+msgid "This rate tier is enabled"
+msgstr ""
+
+#: includes/admin/settings.php:150 includes/admin/settings.php:171
+msgid "Number of Sales"
+msgstr ""
+
+#: includes/admin/settings.php:151 includes/admin/settings.php:172
+msgid "Total Earnings"
+msgstr ""
+
+#: includes/admin/settings.php:163 includes/admin/settings.php:184
+msgid "Remove Rate"
+msgstr ""
+
+#: includes/admin/settings.php:190
+msgid "Add New Rate"
+msgstr ""
+
+#: includes/classes/class-activation.php:49
+#: includes/classes/class-activation.php:124
+msgid "This plugin"
+msgstr ""
+
+#: includes/classes/class-activation.php:86
+msgid "activate it"
+msgstr ""
+
+#: includes/classes/class-activation.php:89
+msgid "install it"
+msgstr ""
+
+#: includes/classes/class-activation.php:92
+#, php-format
+msgid " requires Easy Digital Downloads! Please %s to continue!"
+msgstr ""
+
+#: includes/classes/class-activation.php:158
+#, php-format
+msgid " requires %sEDD Commissions%s. Please activate it to continue."
+msgstr ""
+
+#: includes/classes/class-activation.php:160
+#, php-format
+msgid " requires %sEDD Commissions%s. Please install it to continue."
+msgstr ""
+
+#: includes/classes/class-commissions.php:89
+msgid ""
+"EDD Tiered Commission Rates: Your version of EDD Commissions must be updated "
+"to version 3.4.6 or later to use the Tiered Commission Rates extension in "
+"conjunction with Commissions."
+msgstr ""
+
+#: includes/classes/class-commissions.php:277
+msgid "Check to disable tiered commission rates"
+msgstr ""
+
+#: includes/classes/class-commissions.php:457
+msgid "sales"
+msgstr ""
+
+#: includes/classes/class-commissions.php:459
+msgid "earnings"
+msgstr ""
+
+#: includes/classes/class-commissions.php:463
+#, php-format
+msgid ""
+"Commission rate for %s adjusted from %s to %s because %s met the %s %s tier "
+"condition."
+msgstr ""
+
+#: includes/functions/user-meta.php:28
+msgid "Disable Tiered Rates"
+msgstr ""
+
+#: includes/functions/user-meta.php:31
+msgid ""
+"Check this box if you wish to prevent tiered commission rates being applied "
+"to this user."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Easy Digital Downloads - Tiered Commission Rates"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://sellcomet.com/downloads/tiered-commission-rates/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Reward your vendors with higher commission rates the more they sell or earn."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Sell Comet"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://sellcomet.com"
+msgstr ""
