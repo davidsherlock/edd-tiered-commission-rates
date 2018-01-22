@@ -1,4 +1,4 @@
-## [Easy Digital Downloads - Tiered Commission Rates](https://sellcomet.com/downloads/edd-tiered-commission-rates/)
+## [Easy Digital Downloads - Tiered Commission Rates](https://wordpress.org/plugins/edd-tiered-commission-rates/)
 
 Tiered Commission Rates for Easy Digital Downloads Commissions allows you to easily setup a tiered reward system where your vendors are rewarded with higher and higher commission rates, the more they sell or earn. This is similar to popular marketplaces such as ThemeForest, Fiverr, and alike.
 
@@ -78,7 +78,7 @@ This will download the latest developer copy of Tiered Commission Rates.
 If you find an issue, let us know [here](https://github.com/davidsherlock/edd-tiered-commission-rates/issues?state=open)!
 
 ## Support
-This is a developer's portal for Tiered Commission Rates and should _not_ be used for support. Please visit the [support page](https://sellcomet.com/contact/) if you need to submit a support request.
+This is a developer's portal for Tiered Commission Rates and should _not_ be used for support. Please visit the [support page](https://wordpress.org/support/plugin/edd-tiered-commission-rates) if you need to submit a support request.
 
 ## Contributions
 Anyone is welcome to contribute to Tiered Commission Rates.
